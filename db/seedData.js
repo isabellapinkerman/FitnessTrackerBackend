@@ -14,8 +14,9 @@ async function dropTables() {
     console.log("Dropping All Tables...");
     await client.query(`
     DROP TABLE IF EXISTS users;
+    DROP TABLE IF EXISTS activities;
     `);
-    console.log("finsihed dropping tables");
+    console.log("finished dropping tables");
   } catch (error) {
     console.error("error dropping tables");
     throw error;
@@ -29,10 +30,34 @@ async function createTables() {
 
     await client.query(`
   CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    Id SERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL
-  )`);
+  )
+  
+  CREATE TABLE activities (
+    Id SERIAL PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT NOT NULL
+  )
+
+  CREATE TABLE routines (
+    Id SERIAL PRIMARY KEY,
+    "creatorId" INTEGER REFERENCES users(Id)
+    "isPublic" BOOLEAN DEFAULT false
+    name VARCHAR(255) UNIQUE NOT NULL
+    goal TEXT NOT NULL
+  )
+
+  CREATE TABLE routineActivities(
+    Id SERIAL PRIMARY KEY
+    "routineId" INTEGER REFERENCES routines(Id)
+    "activityId" 
+  )
+  
+  
+  
+  `);
     console.log("finished building tables");
   } catch (error) {
     console.error("error building tables");

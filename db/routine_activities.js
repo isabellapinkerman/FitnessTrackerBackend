@@ -1,28 +1,40 @@
-const client = require('./client')
+/* eslint-disable no-useless-catch */
+const client = require("./client");
 
-async function getRoutineActivityById(id){
-}
+async function getRoutineActivityById(id) {}
 
 async function addActivityToRoutine({
   routineId,
   activityId,
-  count,
   duration,
+  count,
 }) {
-    
+  try {
+    const {
+      rows: [routine_activity],
+    } = await client.query(
+      `
+      INSERT INTO routine_activities("routineId", "activityId", duration, count)
+      VALUES ($1, $2, $3, $4 )
+      ON CONFLICT ("routineId", "activityId") DO NOTHING
+      RETURNING *;
+      `,
+      [routineId, activityId, duration, count]
+    );
+console.log(routine_activity, "this is routine activity")
+    return routine_activity;
+  } catch (error) {
+    throw error;
+  }
 }
 
-async function getRoutineActivitiesByRoutine({id}) {
-}
+async function getRoutineActivitiesByRoutine({ id }) {}
 
-async function updateRoutineActivity ({id, ...fields}) {
-}
+async function updateRoutineActivity({ id, ...fields }) {}
 
-async function destroyRoutineActivity(id) {
-}
+async function destroyRoutineActivity(id) {}
 
-async function canEditRoutineActivity(routineActivityId, userId) {
-}
+async function canEditRoutineActivity(routineActivityId, userId) {}
 
 module.exports = {
   getRoutineActivityById,

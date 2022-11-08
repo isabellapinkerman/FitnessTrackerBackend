@@ -10,8 +10,6 @@ async function addActivityToRoutine({
   count,
 }) {
   try {
-
-    //delete this
     const {
       rows: [routine_activity],
     } = await client.query(
@@ -23,7 +21,6 @@ async function addActivityToRoutine({
       `,
       [routineId, activityId, duration, count]
     );
-console.log(routine_activity, "this is routine activity")
     return routine_activity;
   } catch (error) {
     throw error;

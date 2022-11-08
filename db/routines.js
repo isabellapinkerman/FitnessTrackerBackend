@@ -1,4 +1,5 @@
 /* eslint-disable no-useless-catch */
+const { attachActivitiesToRoutines } = require("./activities");
 const client = require("./client");
 
 async function getRoutineById(id) {
@@ -27,41 +28,52 @@ async function getRoutineById(id) {
 
 async function getRoutinesWithoutActivities() {
 
-  // try {
-  //   const { rows: routineIds } = await client.query(`
-  // SELECT id
-  // FROM routines`);
-  //   const routines = await Promise.all(
-  //     routineIds.map((routine) => getRoutineById(routine.id))
-  //   );
+  try {
+    const { rows } = await client.query(`
+  SELECT *
+  FROM routines`);
 
-  //   return routines;
-  // } catch (error) {
-  //   throw error;
-  // }
+    return rows;
+  } catch (error) {
+    throw error;
+  }
 
 }
 
 async function getAllRoutines() {
-  //   try {
-  //     const { rows: routineIds } = await client.query(`
-  //   SELECT id
-  //   FROM routines`);
-  //     const routines = await Promise.all(
-  //       routineIds.map((routine) => getRoutineById(routine.id))
-  //     );
-  // console.log(routines, "this is routines")
-  //     return routines;
-  //   } catch (error) {
-  //     throw error;
-  //   }
+    try {
+      const { rows } = await client.query(`
+  SELECT routines.*, users.username AS "creatorName"
+  FROM routines
+  JOIN users ON routines."creatorId"= users.id
+  `);
+
+      const routines = await attachActivitiesToRoutines(rows)
+  return routines
+    } catch (error) {
+      throw error;
+    }
 }
 
 async function getAllRoutinesByUser({ username }) {}
 
 async function getPublicRoutinesByUser({ username }) {}
 
-async function getAllPublicRoutines() {}
+async function getAllPublicRoutines() {
+  try {
+    const AllRoutines = await getAllRoutines()
+
+    const publicRoutines = AllRoutines.filter((routine)=>{
+      if(routine.isPublic === true){
+        return routine
+      }
+    })
+
+    return publicRoutines
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function getPublicRoutinesByActivity({ id }) {}
 
@@ -84,9 +96,13 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
   }
 }
 
-async function updateRoutine({ id, ...fields }) {}
+async function updateRoutine({ id, ...fields }) {
 
-async function destroyRoutine(id) {}
+}
+
+async function destroyRoutine(id) {
+
+}
 
 module.exports = {
   getRoutineById,

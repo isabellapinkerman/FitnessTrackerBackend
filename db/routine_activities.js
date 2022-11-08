@@ -10,6 +10,8 @@ async function addActivityToRoutine({
   count,
 }) {
   try {
+
+    //delete this
     const {
       rows: [routine_activity],
     } = await client.query(

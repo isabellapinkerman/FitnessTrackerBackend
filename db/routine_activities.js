@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-catch */
 const client = require("./client");
+const { getRoutineById } = require("./routines");
 
 //NEW
 async function getRoutineActivityById(id) {
@@ -68,7 +69,7 @@ async function updateRoutineActivity({ id, ...fields }) {
     if (setString.length > 0) {
       await client.query(
         `
-          UPDATE routine_activity
+          UPDATE routine_activities
           SET ${setString}
           WHERE id=${id}
           RETURNING *
@@ -83,21 +84,54 @@ async function updateRoutineActivity({ id, ...fields }) {
   }
 }
 
+//NEW, NOT WORKING YET
 async function destroyRoutineActivity(id) {
+
+  console.log(id, "this is id")
+
 
   try {
     await client.query(`
     DELETE
-    FROM routine_activity
+    FROM routine_activities
     WHERE id=${id}
+    RETURNING *
     `);
-
   } catch (error) {
     throw error;
   }
+
+
 }
 
-async function canEditRoutineActivity(routineActivityId, userId) {}
+//NEW
+async function canEditRoutineActivity(routineActivityId, userId) {
+  try {
+    //Identifies which routine activity matches the id being passed into the function
+    const selectedRoutineActivity = await getRoutineActivityById(
+      routineActivityId
+    );
+
+    //Take the key of routineId from the routineActivity object
+    let routineId = selectedRoutineActivity.routineId;
+
+    //Identifies which routine matches the routineId found
+    //Imported the function from "./routines"
+    let routine = await getRoutineById(routineId);
+
+    //Takes the key of creatorId from the routine object
+    let creatorId = routine.creatorId;
+
+    //Checks to see if the creatorId from the routine matches the userId passed into the function. If it matches, then it returns true, otherwise it returns false.
+    if (creatorId === userId) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    return error;
+  }
+}
 
 module.exports = {
   getRoutineActivityById,

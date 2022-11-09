@@ -173,7 +173,7 @@ async function updateRoutine({ id, ...fields }) {
 }
 
 
-//NEW
+//NEW NOT WORKING YET
 async function destroyRoutine(id) {
   try {
     await client.query(`

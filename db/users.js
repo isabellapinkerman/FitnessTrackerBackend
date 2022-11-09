@@ -1,12 +1,17 @@
 /* eslint-disable no-useless-catch */
 const client = require("./client");
+const bcrypt = require("bcrypt")
+
 
 // database functions
 
 // user functions
 async function createUser({ username, password }) {
-  // const SALT_COUNT = 10;
-  // const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
+
+  
+  const SALT_COUNT = 10;
+  const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
+
   try {
     const {
       rows: [user],
@@ -18,7 +23,7 @@ async function createUser({ username, password }) {
     RETURNING *
     ;
     `,
-      [username, password]
+      [username, hashedPassword]
     );
     delete user.password
     return user;
@@ -28,11 +33,17 @@ async function createUser({ username, password }) {
 }
 
 async function getUser({ username, password }) {
-  // const user = await getUserByUsername(username);
-  // const hashedPassword = user.password;
-  // const isValid = await bcrypt.compare(password, hashedPassword)
+
+
+  const user = await getUserByUsername(username);
+  const hashedPassword = user.password;
+  const isValid = await bcrypt.compare(password, hashedPassword)
+
+  // console.log(isValid, "this is is valid")
+
+
   try {
-    if(!username || !password){
+    if(!username || !hashedPassword){
       return null
     }
 
@@ -41,7 +52,8 @@ async function getUser({ username, password }) {
       return null
     }
 
-    if(currentUser.password === password){
+    //This if statement was previously (currentUser.password === password) which checked whether the currentUser's password is equal to the existing un-hashed password. isValid is passed in the if statement instead because it already checks the currentUser's password and the hashedPassword.
+    if(isValid){
       delete currentUser.password
       return currentUser
     }else{

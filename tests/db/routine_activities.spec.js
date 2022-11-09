@@ -87,7 +87,7 @@ describe("DB Routine Activities", () => {
     })
   })
 
-  describe("updateRoutineActivity({ id, count, duration })", () => {
+  xdescribe("updateRoutineActivity({ id, count, duration })", () => {
     it("Finds the routine with id equal to the passed in id. Updates the count or duration as necessary.", async () => {
       const fakeRoutineActivity = await createFakeRoutineActivity();
 
@@ -126,7 +126,7 @@ describe("DB Routine Activities", () => {
     })
   })
 
-  describe("canEditRoutineActivity", () => {
+  xdescribe("canEditRoutineActivity", () => {
     it("should return true if routine activity can be edited by user", async () => {
       const fakeUser = await createFakeUser("Jay");
       const fakeRoutine = await createFakePublicRoutine(fakeUser.id, "At 3pm", "Forever");

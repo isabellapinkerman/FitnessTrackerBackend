@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-// GET /api/activities/:activityId/routines
+// GET /api/activities/:activityId/routines--------------------------------------------------------------------------------
 
-// GET /api/activities
+// GET /api/activities--------------------------------------------------------------------------------
 
-// POST /api/activities
+// POST /api/activities--------------------------------------------------------------------------------
 
-// PATCH /api/activities/:activityId
+// PATCH /api/activities/:activityId--------------------------------------------------------------------------------
 
 module.exports = router;

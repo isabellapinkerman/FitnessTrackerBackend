@@ -60,6 +60,7 @@ async function getRoutineActivitiesByRoutine({ id }) {
   }
 }
 
+//NEW. SAME PROCESS AS updateRoutine() 
 async function updateRoutineActivity({ id, ...fields }) {
   const setString = Object.keys(fields)
     .map((key, index) => `"${key}"=$${index + 1}`)

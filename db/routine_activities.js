@@ -1,7 +1,25 @@
 /* eslint-disable no-useless-catch */
 const client = require("./client");
 
-async function getRoutineActivityById(id) {}
+//NEW
+async function getRoutineActivityById(id) {
+  try {
+    const {
+      rows: [routine_activity],
+    } = await client.query(`
+  SELECT *
+  FROM routine_activities
+  WHERE id = ${id}`);
+
+    if (!routine_activity) {
+      return null;
+    }
+
+    return routine_activity;
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function addActivityToRoutine({
   routineId,
@@ -27,11 +45,57 @@ async function addActivityToRoutine({
   }
 }
 
-async function getRoutineActivitiesByRoutine({ id }) {}
+//NEW
+async function getRoutineActivitiesByRoutine({ id }) {
+  try {
+    const { rows: routine_activity } = await client.query(`
+    SELECT id
+    FROM routine_activities
+    WHERE "routineId" = ${id}`);
 
-async function updateRoutineActivity({ id, ...fields }) {}
+    return routine_activity;
+  } catch (error) {
+    throw error;
+  }
+}
 
-async function destroyRoutineActivity(id) {}
+async function updateRoutineActivity({ id, ...fields }) {
+  const setString = Object.keys(fields)
+    .map((key, index) => `"${key}"=$${index + 1}`)
+    .join(", ");
+
+  try {
+    if (setString.length > 0) {
+      await client.query(
+        `
+          UPDATE routine_activity
+          SET ${setString}
+          WHERE id=${id}
+          RETURNING *
+          `,
+        Object.values(fields)
+      );
+    }
+
+    return getRoutineActivityById(id);
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function destroyRoutineActivity(id) {
+
+  try {
+    await client.query(`
+    DELETE
+    FROM routine_activity
+    WHERE id=${id}
+    `);
+
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function canEditRoutineActivity(routineActivityId, userId) {}
 

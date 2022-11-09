@@ -134,16 +134,59 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
     `,
       [creatorId, isPublic, name, goal]
     );
-    // console.log(routine, "this is routine")
+
     return routine;
   } catch (error) {
     throw error;
   }
 }
 
-async function updateRoutine({ id, ...fields }) {}
+//NEW
+async function updateRoutine({ id, ...fields }) {
+  //setString takes all the keys from object input and sets it in a way that object.query can read it. The index is moved over by 1 for every additional key.
+  const setString = Object.keys(fields)
+    .map((key, index) => `"${key}"=$${index + 1}`)
+    .join(", ");
 
-async function destroyRoutine(id) {}
+  //Uncomment below to test it out:
+  // console.log(setString, "setString");
+
+  //Try block does NOT check if values have changed. It takes the newer values that are in the fields input then assigns them as new values in the database.
+  try {
+    if (setString.length > 0) {
+      await client.query(
+        `
+        UPDATE routines
+        SET ${setString}
+        WHERE id=${id}
+        RETURNING *
+        `,
+        Object.values(fields)
+      );
+    }
+
+    //This should reflect when you pass the same id into the getRoutineById function.
+    return getRoutineById(id);
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+//NEW
+async function destroyRoutine(id) {
+  try {
+    await client.query(`
+    DELETE
+    FROM routines
+    WHERE id=${id}
+    RETURNING *
+    `);
+    //missing delete from routine_activities
+  } catch (error) {
+    throw error;
+  }
+}
 
 module.exports = {
   getRoutineById,

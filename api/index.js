@@ -1,50 +1,50 @@
 const express = require("express");
 const router = express.Router();
-// const jwt = require("jsonwebtoken");
-// const { getUserById } = require("../db");
-// const { JWT_SECRET } = process.env;
+const jwt = require("jsonwebtoken");
+const { getUserById } = require("../db");
+const { JWT_SECRET } = process.env;
 
-// router.use(async (req, res, next) => {
+router.use(async (req, res, next) => {
+    const prefix = "Bearer ";
+    const auth = req.header("Authorization");
 
-//     const prefix = "Bearer ";
-//     const auth = req.header("Authorization");
+    if (!auth) {
+      next();
 
-//     if (!auth) {
-//       next();
+    } else if (auth.startsWith(prefix)) {
+      const token = auth.slice(prefix.length);
 
-//     } else if (auth.startsWith(prefix)) {
-//       const token = auth.slice(prefix.length);
+      try {
+        const { id } = jwt.verify(token, JWT_SECRET);
 
-//       try {
-//         const { id } = jwt.verify(token, JWT_SECRET);
+        if (id) {
+          req.user = await getUserById(id);
+          console.log(req.user, "THIS IS REQ USER")
+          next();
+        }
+      } catch ({ name, message }) {
+        next({ name, message });
+      }
+    } else {
+      next({
+        name: "AuthorizationHeaderError",
+        message: `Authorization token must start with ${prefix}`,
+      });
+    }
+  });
 
-//         if (id) {
-//           req.user = await getUserById(id);
-//           next();
-//         }
-//       } catch ({ name, message }) {
-//         next({ name, message });
-//       }
-//     } else {
-//       next({
-//         name: "AuthorizationHeaderError",
-//         message: `Authorization token must start with ${prefix}`,
-//       });
-//     }
-//   });
+  router.use((req, res, next) => {
+    if (req.user) {
+      console.log("User is set:", req.user);
+    }
 
-//   router.use((req, res, next) => {
-//     if (req.user) {
-//       console.log("User is set:", req.user);
-//     }
-
-//     next();
-//   });
+    next();
+  });
 
 // GET /api/health--------------------------------------------------------------------------------
 router.get("/health", async (req, res, next) => {
   console.log("This is healthy");
-  next();
+  res.send({message:"Great success!"})
 });
 
 // ROUTER: /api/users--------------------------------------------------------------------------------
@@ -66,6 +66,7 @@ router.use("/routine_activities", routineActivitiesRouter);
 //---------------NEW--------------------
 router.use((error, req, res, next) => {
   res.send({
+    error: error.name,
     name: error.name,
     message: error.message,
   });

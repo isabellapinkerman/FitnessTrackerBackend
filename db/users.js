@@ -47,7 +47,6 @@ async function getUser({ username, password }) {
   //isValid should return true if the password is the hashedPassword else it returns false.
   // console.log(isValid, "this is is valid")
 
-
   try {
     if(!username || !hashedPassword){
       return null

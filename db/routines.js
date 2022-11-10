@@ -149,7 +149,6 @@ async function updateRoutine({ id, ...fields }) {
     .join(", ");
 
   //Uncomment below to test it out:
-  // console.log(setString, "setString");
 
   //Try block does NOT check if values have changed. It takes the newer values that are in the fields input then assigns them as new values in the database.
   try {
@@ -176,6 +175,11 @@ async function updateRoutine({ id, ...fields }) {
 //NEW NOT WORKING YET
 async function destroyRoutine(id) {
   try {
+    await client.query(`
+    DELETE
+    FROM routine_activities
+    WHERE "routineId"=${id}
+    RETURNING *`)
     await client.query(`
     DELETE
     FROM routines

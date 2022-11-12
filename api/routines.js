@@ -1,7 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const { requireUser, objectOwner } = require("./utils");
-const { getAllRoutines, createRoutine, getRoutineById, destroyRoutine, attachActivitiesToRoutines } = require("../db");
+const {
+  getAllRoutines,
+  createRoutine,
+  getRoutineById,
+  destroyRoutine,
+  attachActivitiesToRoutines,
+} = require("../db");
 
 // GET /api/routines--------------------------------------------------------------------------------
 router.get("/", async (req, res, next) => {
@@ -28,11 +34,7 @@ router.post("/", requireUser, async (req, res, next) => {
 
     const routine = await createRoutine(routineData);
 
-    // if (routine) {
-    //   res.send({ routine });
-    // }
-
-    res.send( routine );
+    res.send(routine);
   } catch (error) {
     next(error);
   }
@@ -40,13 +42,17 @@ router.post("/", requireUser, async (req, res, next) => {
 
 // PATCH /api/routines/:routineId--------------------------------------------------------------------------------
 
-router.patch("/:routineId", requireUser, objectOwner, async (req, res, next) => {
-  try {
-
-  } catch (error) {
-    next(error);
+router.patch(
+  "/:routineId",
+  requireUser,
+  objectOwner,
+  async (req, res, next) => {
+    try {
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 // DELETE /api/routines/:routineId--------------------------------------------------------------------------------
 
@@ -60,7 +66,6 @@ router.patch("/:routineId", requireUser, objectOwner, async (req, res, next) => 
 //     if(){
 //       destroyRoutineActivity(routineId)
 //       destroyRoutine(routineId)}
-    
 
 //   } catch (error) {
 //     next(error);
@@ -71,16 +76,13 @@ router.patch("/:routineId", requireUser, objectOwner, async (req, res, next) => 
 
 router.post("/:routineId/activities", requireUser, async (req, res, next) => {
   try {
-    const {routineId} = req.params
+    const { routineId } = req.params;
 
-    let routine = await getRoutineById(routineId)
+    let routine = await getRoutineById(routineId);
 
+    const routineActivity = await attachActivitiesToRoutines(routine);
 
-
-    const routineActivity = await attachActivitiesToRoutines(routine)
-    
-
-    res.send( routineActivity );
+    res.send(routineActivity);
   } catch (error) {
     next(error);
   }

@@ -1,15 +1,14 @@
-require("dotenv").config()
+require("dotenv").config();
 
-const express = require("express")
-const app = express()
+const express = require("express");
+const cors = require("cors");
+const app = express();
+
+app.use(cors());
 
 //----------------------------NEW STUFF-----------------------------
 //Routes the api/index.js to this page
 const apiRouter = require("./api");
-
-
-const cors = require("cors")
-app.use(cors());
 
 const morgan = require("morgan");
 app.use(morgan("dev"));
@@ -20,7 +19,6 @@ app.use(express.json());
 app.use("/api", apiRouter);
 
 //------------------------------------------------------------------
-
 
 // Setup your Middleware and API Router here
 

@@ -19,7 +19,6 @@ router.use(async (req, res, next) => {
 
         if (id) {
           req.user = await getUserById(id);
-          console.log(req.user, "THIS IS REQ USER")
           next();
         }
       } catch ({ name, message }) {
@@ -43,7 +42,6 @@ router.use(async (req, res, next) => {
 
 // GET /api/health--------------------------------------------------------------------------------
 router.get("/health", async (req, res, next) => {
-  console.log("This is healthy");
   res.send({message:"Great success!"})
 });
 

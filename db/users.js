@@ -91,7 +91,6 @@ async function getUserById(userId) {
   }
 }
 
-//why is there no test for this
 async function getUserByUsername(username) {
   try {
     const {

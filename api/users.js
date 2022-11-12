@@ -8,6 +8,7 @@ const {
   getUser,
   createUser,
   getPublicRoutinesByUser,
+  getUserByUsername,
 } = require("../db");
 
 // POST /api/users/login--------------------------------------------------------------------------------
@@ -44,21 +45,23 @@ router.post("/login", async (req, res, next) => {
 
 // POST /api/users/register--------------------------------------------------------------------------------
 
+
 router.post("/register", async (req, res, next) => {
   const { username, password } = req.body;
 
+  // const SALT_COUNT = 10;
+  // const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
+
+  const existingUser = await getUserByUsername( username );
+
+  if (existingUser) {
+    next({
+      name: "UserExistsError",
+      message: `User ${username} is already taken.`,
+    });
+  }
+
   try {
-    const existingUser = await getUser({ username, password });
-
-    if (existingUser) {
-      next({
-        name: "UserExistsError",
-        message: `User ${username} is already taken.`,
-      });
-    }
-
-    console.log(password, "this is password");
-
     if (password.length < 8) {
       next({
         error: "PasswordError",
@@ -66,18 +69,12 @@ router.post("/register", async (req, res, next) => {
         name: "PasswordError",
       });
     }
-    if (username) {
-      next({
-        name: "UserExistsError",
-        message: `User ${username} is already taken.`,
-      });
-    }
 
     const user = await createUser({
       username,
       password,
     });
-    console.log(user, "new user");
+
     const token = jwt.sign(
       {
         id: user.id,
@@ -90,11 +87,13 @@ router.post("/register", async (req, res, next) => {
     res.send({
       message: "thank you for signing up",
       token,
+      user,
     });
   } catch ({ name, message }) {
     next({ name, message });
   }
 });
+
 
 // GET /api/users/me--------------------------------------------------------------------------------
 

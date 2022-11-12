@@ -19,6 +19,7 @@ router.use(async (req, res, next) => {
 
         if (id) {
           req.user = await getUserById(id);
+
           next();
         }
       } catch ({ name, message }) {
@@ -41,7 +42,7 @@ router.use(async (req, res, next) => {
   });
 
 // GET /api/health--------------------------------------------------------------------------------
-router.get("/health", async (req, res, next) => {
+router.get("/health", async (req, res) => {
   res.send({message:"Great success!"})
 });
 
@@ -64,9 +65,9 @@ router.use("/routine_activities", routineActivitiesRouter);
 //---------------NEW--------------------
 router.use((error, req, res, next) => {
   res.send({
-    error: error.name,
     name: error.name,
     message: error.message,
+    error: "This is the error message"
   });
 });
 

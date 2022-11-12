@@ -40,6 +40,29 @@ async function getActivityById(id) {
   }
 }
 
+// async function checkIfActivityExists(name) {
+//   try {
+//     const {
+//       rows: [activity],
+//     } = await client.query(
+//       `
+//     SELECT *
+//     FROM activities
+//     WHERE name=$1
+//     `,
+//       [name]
+//     );
+
+//     if (!activity) {
+//       return false;
+//     }
+
+//     return true;
+//   } catch (error) {
+//     throw error;
+//   }
+// }
+
 async function getActivityByName(name) {
   try {
     const {
@@ -113,7 +136,6 @@ async function createActivity({ name, description }) {
     RETURNING *`,
       [name, description]
     );
-
     return activity;
   } catch (error) {
     throw error;
@@ -156,4 +178,5 @@ module.exports = {
   attachActivitiesToRoutines,
   createActivity,
   updateActivity,
+  // checkIfActivityExists,
 };

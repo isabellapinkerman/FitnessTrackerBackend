@@ -64,9 +64,9 @@ router.post("/register", async (req, res, next) => {
   try {
     if (password.length < 8) {
       next({
-        error: "PasswordError",
-        message: "Password Too Short!",
         name: "PasswordError",
+        message: "Password Too Short!",
+        error: "This is the error message",
       });
     }
 

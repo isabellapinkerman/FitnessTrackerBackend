@@ -1,8 +1,6 @@
 /* eslint-disable no-useless-catch */
 const client = require("./client");
 const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = process.env;
 
 
 // database functions
@@ -10,16 +8,15 @@ const { JWT_SECRET } = process.env;
 // user functions
 async function createUser({ username, password }) {
 
-//   //Salt is random data added to the password. The more rounds it passes through, the more complex the salt.
-//   //Generates a salt with the number of rounds (in this case 10)
-//   const SALT_COUNT = 10;
+  //Salt is random data added to the password. The more rounds it passes through, the more complex the salt.
+  //Generates a salt with the number of rounds (in this case 10)
+  const SALT_COUNT = 10;
 
-// //Needs bcrypt to be required on line 3 for bcrypt.hash to work
-//   const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
+//Needs bcrypt to be required on line 3 for bcrypt.hash to work
+  const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
 
-//   //hashedPassword in the try block was previously only password
-//   //Once the password is hashed, it can be deleted from the user before returning
-
+  //hashedPassword in the try block was previously only password
+  //Once the password is hashed, it can be deleted from the user before returning
   try {
     const {
       rows: [user],
@@ -31,7 +28,7 @@ async function createUser({ username, password }) {
     RETURNING *
     ;
     `,
-      [username, password]
+      [username, hashedPassword]
     );
     delete user.password
     return user;
@@ -94,35 +91,6 @@ async function getUserById(userId) {
   }
 }
 
-async function getUserByToken(req, res, next){
-  const prefix = "Bearer ";
-  const auth = req.header("Authorization");
-
-  if (!auth) {
-    next();
-
-  } else if (auth.startsWith(prefix)) {
-    const token = auth.slice(prefix.length);
-
-    try {
-      const { id } = jwt.verify(token, JWT_SECRET);
-
-      if (id) {
-        req.user = await getUserById(id);
-        next();
-      }
-    } catch ({ name, message }) {
-      next({ name, message });
-    }
-  } else {
-    next({
-      name: "AuthorizationHeaderError",
-      message: `Authorization token must start with ${prefix}`,
-    });
-  }
-}
-
-
 //why is there no test for this
 async function getUserByUsername(username) {
   try {
@@ -146,5 +114,4 @@ module.exports = {
   getUser,
   getUserById,
   getUserByUsername,
-  getUserByToken
 };

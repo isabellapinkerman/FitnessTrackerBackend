@@ -32,13 +32,15 @@ router.use(async (req, res, next) => {
   }
 });
 
-router.use((req, res, next) => {
-  if (req.user) {
-    console.log("User is set:", req.user);
-  }
+// // The next few lines just shows if a user is set in every test instance.
+// // The console log gets annoying though so it's just commented out here.
+// router.use((req, res, next) => {
+//   if (req.user) {
+//     console.log("User is set:", req.user);
+//   }
 
-  next();
-});
+//   next();
+// });
 
 // GET /api/health--------------------------------------------------------------------------------
 router.get("/health", async (req, res) => {

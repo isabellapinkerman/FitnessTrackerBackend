@@ -105,7 +105,7 @@ const { rows: [routine_activity] } = request
 
 }
 
-//NEW
+//THIS FUNCTION IS BEING USED
 async function canEditRoutineActivity(routineActivityId, userId) {
   try {
     //Identifies which routine activity matches the id being passed into the function

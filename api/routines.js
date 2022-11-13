@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { requireUser, objectOwner } = require("./utils");
+const { requireUser } = require("./utils");
 const {
   getAllRoutines,
   createRoutine,
   getRoutineById,
   destroyRoutine,
   attachActivitiesToRoutines,
+  getRoutineActivitiesByRoutine,
+  updateRoutine,
 } = require("../db");
 
 // GET /api/routines--------------------------------------------------------------------------------
@@ -42,47 +44,97 @@ router.post("/", requireUser, async (req, res, next) => {
 
 // PATCH /api/routines/:routineId--------------------------------------------------------------------------------
 
-router.patch(
-  "/:routineId",
-  requireUser,
-  objectOwner,
-  async (req, res, next) => {
-    try {
-    } catch (error) {
-      next(error);
-    }
+router.patch("/:routineId", requireUser, async (req, res, next) => {
+  const { routineId } = req.params;
+  const { isPublic, name, goal } = req.body;
+
+  const updateFields = {};
+
+  if (isPublic) {
+    updateFields.isPublic = isPublic;
   }
-);
+  if (name) {
+    updateFields.name = name;
+  }
+  if (goal) {
+    updateFields.goal = goal;
+  }
+
+  let routine = await getRoutineById(routineId);
+  let routineOwner = routine.creatorId;
+  let routineName = routine.name;
+
+  if (routineOwner !== req.user.id) {
+    res.status(403);
+    next({
+      name: "OwnerUserError",
+      message: `User ${req.user.username} is not allowed to update ${routineName}`,
+    });
+  }
+
+  try {
+    let updatedRoutine = await updateRoutine({ routineId, ...updateFields });
+
+    if (updatedRoutine) {
+      res.send(updatedRoutine);
+    } else {
+      next({
+        name: "UpdateRoutineError",
+        message: "Error in updating routine!",
+        error: "UpdateRoutineError",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 // DELETE /api/routines/:routineId--------------------------------------------------------------------------------
 
-// router.delete("/:routineId", requireUser, async (req, res, next) => {
-//   try {
+router.delete("/:routineId", requireUser, async (req, res, next) => {
+  const { routineId } = req.params;
 
-//     const {routineId} = req.params
-//     const routineActivityId = await getRoutineActivityById()
-//     console.log()
+  let routine = await getRoutineById(routineId);
+  let routineOwner = routine.creatorId;
+  let routineName = routine.name;
 
-//     if(){
-//       destroyRoutineActivity(routineId)
-//       destroyRoutine(routineId)}
+  if (routineOwner !== req.user.id) {
+    res.status(403);
+    next({
+      name: "OwnerUserError",
+      message: `User ${req.user.username} is not allowed to delete ${routineName}`,
+    });
+  }
 
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+  try {
+    await destroyRoutine(routineId);
+    //I'm unsure about this. Why would sending back routine work after deleting it?
+    res.send(routine);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // POST /api/routines/:routineId/activities--------------------------------------------------------------------------------
 
 router.post("/:routineId/activities", requireUser, async (req, res, next) => {
+  const { routineId } = req.params;
+
+  let routineActivity = await getRoutineActivitiesByRoutine({routineId})
+
+    console.log(routineActivity, "this is routineActivity")
+
+    
   try {
-    const { routineId } = req.params;
+    
 
-    let routine = await getRoutineById(routineId);
+    
 
-    const routineActivity = await attachActivitiesToRoutines(routine);
+    let attachActivitiesToRoutines = await attachActivitiesToRoutines(routineId)
 
-    res.send(routineActivity);
+
+
+    res.send({routine_activity: attachActivitiesToRoutines});
   } catch (error) {
     next(error);
   }

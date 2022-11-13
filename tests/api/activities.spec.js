@@ -29,7 +29,7 @@ const { getPublicRoutinesByActivity } = require("../../db")
 
 
 
-xdescribe("/api/activities", () => {
+describe("/api/activities", () => {
   describe("GET /api/activities", () => {
     it("Just returns a list of all activities in the database", async () => {
       // Create a fake activity to watch for

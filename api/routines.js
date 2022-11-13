@@ -122,8 +122,9 @@ router.post("/:routineId/activities", requireUser, async (req, res, next) => {
 
   let routineActivity = await getRoutineActivitiesByRoutine({routineId})
 
-    console.log(routineActivity, "this is routineActivity")
+  console.log(routineActivity, "this is routineActivity") 
 
+  
     
   try {
     

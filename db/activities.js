@@ -27,41 +27,11 @@ async function getActivityById(id) {
     FROM activities
     WHERE id=${id}`);
 
-    if (!activity) {
-      throw {
-        name: "ActivityNotFoundError",
-        message: "Could not find this activity",
-      };
-    }
-
     return activity;
   } catch (error) {
     throw error;
   }
 }
-
-// async function checkIfActivityExists(name) {
-//   try {
-//     const {
-//       rows: [activity],
-//     } = await client.query(
-//       `
-//     SELECT *
-//     FROM activities
-//     WHERE name=$1
-//     `,
-//       [name]
-//     );
-
-//     if (!activity) {
-//       return false;
-//     }
-
-//     return true;
-//   } catch (error) {
-//     throw error;
-//   }
-// }
 
 async function getActivityByName(name) {
   try {
@@ -75,13 +45,6 @@ async function getActivityByName(name) {
     `,
       [name]
     );
-
-    if (!activity) {
-      throw {
-        name: "ActivityNotFoundError",
-        message: "Could not find this activity",
-      };
-    }
 
     return activity;
   } catch (error) {

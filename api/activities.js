@@ -14,31 +14,27 @@ const {
 // GET /api/activities/:activityId/routines--------------------------------------------------------------------------------
 
 router.get("/:activityId/routines", async (req, res, next) => {
+  //console.log(activityId) exists
   const { activityId } = req.params;
 
-
-  //if the activity does not exist, return error message
-  let activityExists = await getActivityById(activityId);
-  console.log(activityExists ,"this is activityExists")
-  if (!activityExists) {
-    next({
-      name: "ActivityExistsError",
-      message: `The activity ${activityExists.name} does not exist`,
+  //console.log(existingActivity) exists
+  const activity = await getActivityById(activityId);
+  if (!activity) {
+    res.send({
+      name: "ActivityNotFoundError",
+      message: `Activity ${activityId} not found`,
+      error: "ActivityNotFoundError",
     });
   }
 
-  try {
-    const publicRoutines = await getPublicRoutinesByActivity({ activityId });
-
-    console.log(publicRoutines, "this is public routines")
-
-    res.send(publicRoutines);
-  } catch (error) {
-    throw error;
-  }
+  // try {
+ 
+  // } catch (error) {
+  //   throw error;
+  // }
 });
 
-// GET /api/activities--------------------------------------------------------------------------------
+// GET /api/activities--------------OK----------------------------------------------------------------
 
 router.get("/", async (req, res, next) => {
   try {
@@ -50,12 +46,12 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-// POST /api/activities--------------------------------------------------------------------------------
+// POST /api/activities--------------OK----------------------------------------------------------------
 router.post("/", requireUser, async (req, res, next) => {
   const { name, description } = req.body;
 
-  const activityExists = await getActivityByName(name);
-  if (activityExists) {
+  const activity = await getActivityByName(name);
+  if (activity) {
     next({
       name: "ActivityExistsError",
       message: `An activity with name ${name} already exists`,
@@ -63,15 +59,11 @@ router.post("/", requireUser, async (req, res, next) => {
   }
 
   try {
-    const activityData = {};
-    activityData.name = name;
-    activityData.description = description;
-
-    const activity = await createActivity(activityData);
+    const activity = await createActivity({ name, description });
 
     res.send(activity);
-  } catch ({ name, message }) {
-    next({ name, message });
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -80,29 +72,33 @@ router.patch("/:activityId", requireUser, async (req, res, next) => {
   const { activityId } = req.params;
   const { name, description } = req.body;
 
-  let activityExists = await getActivityById(activityId);
-  if (!activityExists) {
+  const activity = await getActivityById(activityId);
+  if (!activity) {
     next({
       name: "ActivityExistsError",
-      message: `The activity ${activityExists.name} does not exist`,
+      message: `Activity ${activityId} not found`,
+      error: "ActivityExistsError",
     });
   }
 
-  const updateFields = {};
+  // if (name === activity.name) {
+  //   next({
+  //     name: "ActivityNameExistsError",
+  //     message: `Activity ${name} already exists`,
+  //     error: "ActivityNameExistsError",
+  //   });
+  // }
 
-  if (name && name !== activityExists.name) {
-    updateFields.name = name;
-  }
-  if (description) {
-    updateFields.description = description;
-  }
+  // try {
+  //   const updateFields = {}
+  //   updateFields.name = name
+  //   updateFields.description = description
 
-  try {
-    const updatedActivity = await updateActivity(activityId, updateFields);
-    res.send(updatedActivity);
-  } catch (error) {
-    throw error;
-  }
+  //   const updatedActivity = await updateActivity(activityId, ...updateFields);
+  //   res.send(updatedActivity);
+  // } catch (error) {
+  //   throw error;
+  // }
 });
 
 module.exports = router;

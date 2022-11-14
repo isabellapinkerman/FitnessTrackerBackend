@@ -86,7 +86,6 @@ router.patch("/:activityId", requireUser, async (req, res, next) => {
           id: activityId,
           name, description
         });
-        console.log(updatedActivity, "queso")
         res.send(updatedActivity);
       }
       

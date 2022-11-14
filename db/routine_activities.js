@@ -24,12 +24,7 @@ async function getRoutineActivityById(id) {
 
 async function addActivityToRoutine(params) {
   try {
-const {
-  routineId,
-  activityId,
-  duration,
-  count,
-} = params
+    const { routineId, activityId, duration, count } = params;
 
     const {
       rows: [routine_activity],
@@ -42,7 +37,7 @@ const {
       `,
       [routineId, activityId, duration, count]
     );
-    console.log(routine_activity, 'chocochips')
+
     return routine_activity;
   } catch (error) {
     throw error;
@@ -56,14 +51,14 @@ async function getRoutineActivitiesByRoutine({ id }) {
     SELECT *
     FROM routine_activities
     WHERE "routineId" = ${id}`);
-console.log(routine_activity, "hello world")
+
     return routine_activity;
   } catch (error) {
     throw error;
   }
 }
 
-//NEW. SAME PROCESS AS updateRoutine() 
+//NEW. SAME PROCESS AS updateRoutine()
 async function updateRoutineActivity({ id, ...fields }) {
   const setString = Object.keys(fields)
     .map((key, index) => `"${key}"=$${index + 1}`)
@@ -89,23 +84,20 @@ async function updateRoutineActivity({ id, ...fields }) {
 }
 
 async function destroyRoutineActivity(id) {
-
-
-
   try {
     const request = await client.query(`
     DELETE
     FROM routine_activities
     WHERE id=${id}
     RETURNING *
-    `,);
-const { rows: [routine_activity] } = request
-    return routine_activity
+    `);
+    const {
+      rows: [routine_activity],
+    } = request;
+    return routine_activity;
   } catch (error) {
     throw error;
   }
-
-
 }
 
 //THIS FUNCTION IS BEING USED

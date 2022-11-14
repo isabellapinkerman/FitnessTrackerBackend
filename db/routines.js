@@ -150,7 +150,7 @@ async function updateRoutine({ id, ...fields }) {
   //Try block does NOT check if values have changed. It takes the newer values that are in the fields input then assigns them as new values in the database.
   try {
     if (setString.length > 0) {
-       await client.query(
+      await client.query(
         `
         UPDATE routines
         SET ${setString}
@@ -160,15 +160,14 @@ async function updateRoutine({ id, ...fields }) {
         Object.values(fields)
       );
     }
-// const updatedRoutine = await getRoutineById(id)
-// console.log(updatedRoutine)
+    // const updatedRoutine = await getRoutineById(id)
+    // console.log(updatedRoutine)
     // return updatedRoutine;
-    return await getRoutineById(id)
+    return await getRoutineById(id);
   } catch (error) {
     throw error;
   }
 }
-
 
 //NEW NOT WORKING YET
 async function destroyRoutine(id) {
@@ -177,7 +176,7 @@ async function destroyRoutine(id) {
     DELETE
     FROM routine_activities
     WHERE "routineId"=${id}
-    RETURNING *`)
+    RETURNING *`);
     await client.query(`
     DELETE
     FROM routines

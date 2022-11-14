@@ -1,19 +1,17 @@
 /* eslint-disable no-useless-catch */
 const client = require("./client");
-const bcrypt = require("bcrypt")
-
+const bcrypt = require("bcrypt");
 
 // database functions
 
 // user functions
 async function createUser({ username, password }) {
-
   //Salt is random data added to the password. The more rounds it passes through, the more complex the salt.
   //Generates a salt with the number of rounds (in this case 10)
   const SALT_COUNT = 10;
 
-//Needs bcrypt to be required on line 3 for bcrypt.hash to work
-  const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
+  //Needs bcrypt to be required on line 3 for bcrypt.hash to work
+  const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
 
   //hashedPassword in the try block was previously only password
   //Once the password is hashed, it can be deleted from the user before returning
@@ -30,7 +28,7 @@ async function createUser({ username, password }) {
     `,
       [username, hashedPassword]
     );
-    delete user.password
+    delete user.password;
     return user;
   } catch (error) {
     throw error;
@@ -38,34 +36,30 @@ async function createUser({ username, password }) {
 }
 
 async function getUser({ username, password }) {
-
-
   const user = await getUserByUsername(username);
   const hashedPassword = user.password;
-  const isValid = await bcrypt.compare(password, hashedPassword)
+  const isValid = await bcrypt.compare(password, hashedPassword);
 
   //isValid should return true if the password is the hashedPassword else it returns false.
   // console.log(isValid, "this is is valid")
 
   try {
-    if(!username || !hashedPassword){
-      return null
+    if (!username || !hashedPassword) {
+      return null;
     }
 
-    const currentUser = await getUserByUsername(username)
-    if(!currentUser){
-      return null
+    const currentUser = await getUserByUsername(username);
+    if (!currentUser) {
+      return null;
     }
 
     //This if statement was previously (currentUser.password === password) which checked whether the currentUser's password is equal to the existing un-hashed password. isValid is passed in the if statement instead because it already checks the currentUser's password and the hashedPassword.
-    if(isValid){
-      delete currentUser.password
-      return currentUser
-    }else{
-      return null
+    if (isValid) {
+      delete currentUser.password;
+      return currentUser;
+    } else {
+      return null;
     }
-
-
   } catch (error) {
     throw error;
   }

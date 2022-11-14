@@ -11,7 +11,7 @@ const app = require("../../app");
 //----------------------------------------TEST API------------------------------------------------------------
 
 
-xdescribe("/api/unknown", () => {
+describe("/api/unknown", () => {
   it("should return a 404", async (done) => {
     const response = await request(app).get("/api/unknown");
     expect(response.status).toEqual(404);

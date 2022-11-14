@@ -22,13 +22,15 @@ async function getRoutineActivityById(id) {
   }
 }
 
-async function addActivityToRoutine({
+async function addActivityToRoutine(params) {
+  try {
+const {
   routineId,
   activityId,
   duration,
   count,
-}) {
-  try {
+} = params
+
     const {
       rows: [routine_activity],
     } = await client.query(
@@ -40,6 +42,7 @@ async function addActivityToRoutine({
       `,
       [routineId, activityId, duration, count]
     );
+    console.log(routine_activity, 'chocochips')
     return routine_activity;
   } catch (error) {
     throw error;
@@ -50,10 +53,10 @@ async function addActivityToRoutine({
 async function getRoutineActivitiesByRoutine({ id }) {
   try {
     const { rows: routine_activity } = await client.query(`
-    SELECT id
+    SELECT *
     FROM routine_activities
     WHERE "routineId" = ${id}`);
-
+console.log(routine_activity, "hello world")
     return routine_activity;
   } catch (error) {
     throw error;

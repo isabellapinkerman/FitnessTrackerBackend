@@ -72,41 +72,33 @@ router.post("/", requireUser, async (req, res, next) => {
 router.patch("/:activityId", requireUser, async (req, res, next) => {
   const { activityId } = req.params;
   const { name, description } = req.body;
-  const fields = {};
-  if (typeof name != "undefined") {
-    fields.name = name;
-  }
-  if (typeof description != "undefined") {
-    fields.description = description;
-  }
-
-  const activity = await getActivityByName(name);
+  const activity = await getActivityById(activityId);
 
   try {
-    if (activity) {
-      if (name === activity.name) {
-        next({
+    if (!activity) { next({
+        name: "ActivityExistsError",
+        message: `Activity ${activityId} not found`,
+        error: "ActivityExistsError",
+      })
+       
+      } else {
+        let updatedActivity = await updateActivity({
+          id: activityId,
+          name, description
+        });
+        console.log(updatedActivity, "queso")
+        res.send(updatedActivity);
+      }
+      
+  } catch (error) {
+    if(error.code == 23505){
+    next({
           name: "ActivityNameExistsError",
           message: `An activity with name ${name} already exists`,
           error: "ActivityNameExistsError",
         });
-      } else {
-        let updatedActivity = await updateActivity({
-          id: activityId,
-          ...fields,
-        });
-        res.send(updatedActivity);
-      }
-    } else {
-      next({
-        name: "ActivityExistsError",
-        message: `Activity ${activityId} not found`,
-        error: "ActivityExistsError",
-      });
-    }
-  } catch (error) {
-    throw error;
   }
+}
 });
 
 module.exports = router;

@@ -110,33 +110,29 @@ router.delete("/:routineId", requireUser, async (req, res, next) => {
 router.post("/:routineId/activities", async (req, res, next) => {
   const { routineId } = req.params;
   const { activityId, duration, count } = req.body;
-
-  // const routineActivityId = await getRoutineActivitiesByRoutine({
-  //   id: routineId,
-  // });
-
-  // const routineActivity = await getRoutineActivityById(routineActivityId[0].id);
-
-
-  // if (routineActivity.activityId !== activityId) {
-  //   next({
-  //     name: "ActivityExistsInRoutineError",
-  //     message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
-  //     error: "ActivityExistsInRoutineError",
-  //   });
-  // }
-
+  const array = await getRoutineActivitiesByRoutine({id:routineId})
+  let exists = false
+  array.forEach((routine_activity)=>{
+ if (routine_activity.activityId == activityId){
+    exists = true
+  }
+  })
   try {
-    let attachedActivitiesToRoutines = await addActivityToRoutine({
+    if (exists){ return next({
+     name: "ActivityExistsInRoutineError",
+     message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
+     error: "ActivityExistsInRoutineError",
+   });}
+    let attachedActivityToRoutine = await addActivityToRoutine({
       routineId,
       activityId,
       duration,
       count,
     });
 
-    res.send(attachedActivitiesToRoutines);
+    res.send(attachedActivityToRoutine);
   } catch (error) {
-    next(error);
+    next()
   }
 });
 

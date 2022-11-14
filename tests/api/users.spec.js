@@ -37,7 +37,7 @@ const {
 
 //----------------------------------------TEST API------------------------------------------------------------
 
-describe("/api/users", () => {
+xdescribe("/api/users", () => {
   describe("POST /api/users/register", () => {
     it("Creates a new user.", async () => {
       // Create some fake user data

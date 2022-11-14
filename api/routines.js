@@ -9,6 +9,7 @@ const {
   attachActivitiesToRoutines,
   getRoutineActivitiesByRoutine,
   updateRoutine,
+  addActivityToRoutine,
 } = require("../db");
 
 // GET /api/routines--------------------------------------------------------------------------------
@@ -43,47 +44,32 @@ router.post("/", requireUser, async (req, res, next) => {
 });
 
 // PATCH /api/routines/:routineId--------------------------------------------------------------------------------
-
+//DB updateROUTINES is not passing tests
 router.patch("/:routineId", requireUser, async (req, res, next) => {
   const { routineId } = req.params;
-  const { isPublic, name, goal } = req.body;
-
-  const updateFields = {};
-
-  if (isPublic) {
-    updateFields.isPublic = isPublic;
-  }
-  if (name) {
-    updateFields.name = name;
-  }
-  if (goal) {
-    updateFields.goal = goal;
-  }
+  const {isPublic, name, goal } = req.body;
+  const fields = {};  
+  if (typeof name != 'undefined'){ fields.name = name}
+  if (typeof goal != 'undefined'){ fields.goal = goal}
+  if (typeof isPublic != 'undefined'){ fields.isPublic = isPublic}
 
   let routine = await getRoutineById(routineId);
   let routineOwner = routine.creatorId;
   let routineName = routine.name;
-
-  if (routineOwner !== req.user.id) {
-    res.status(403);
-    next({
-      name: "OwnerUserError",
-      message: `User ${req.user.username} is not allowed to update ${routineName}`,
-    });
-  }
-
   try {
-    let updatedRoutine = await updateRoutine({ routineId, ...updateFields });
 
-    if (updatedRoutine) {
-      res.send(updatedRoutine);
-    } else {
+    if (routineOwner === req.user.id) {
+      let updatedRoutine = await updateRoutine({id: routineId, ...fields});
+    res.send(updatedRoutine)
+    }else {
+      res.status(403);
       next({
-        name: "UpdateRoutineError",
-        message: "Error in updating routine!",
-        error: "UpdateRoutineError",
+        error: "ERROR",
+        name: "OwnerUserError",
+        message: `User ${req.user.username} is not allowed to update ${routineName}`,
       });
     }
+  
   } catch (error) {
     next(error);
   }
@@ -117,25 +103,16 @@ router.delete("/:routineId", requireUser, async (req, res, next) => {
 
 // POST /api/routines/:routineId/activities--------------------------------------------------------------------------------
 
-router.post("/:routineId/activities", requireUser, async (req, res, next) => {
-  const { routineId } = req.params;
+router.post("/:routineId/activities", async (req, res, next) => {
+  const { routineId, activityId, duration, count } = req.body
 
-  let routineActivity = await getRoutineActivitiesByRoutine({routineId})
-
+  const routineActivity = await getRoutineActivitiesByRoutine({id:routineId})
   console.log(routineActivity, "this is routineActivity") 
 
-  
-    
   try {
-    
+    let attachedActivitiesToRoutines = await addActivityToRoutine({routineId, activityId, duration, count})
 
-    
-
-    let attachActivitiesToRoutines = await attachActivitiesToRoutines(routineId)
-
-
-
-    res.send({routine_activity: attachActivitiesToRoutines});
+    res.send(attachedActivitiesToRoutines);
   } catch (error) {
     next(error);
   }

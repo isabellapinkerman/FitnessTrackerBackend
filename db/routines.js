@@ -141,19 +141,16 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
   }
 }
 
-//NEW
+//needs to be fixed, broken by altering to make our api work
 async function updateRoutine({ id, ...fields }) {
   //setString takes all the keys from object input and sets it in a way that object.query can read it. The index is moved over by 1 for every additional key.
   const setString = Object.keys(fields)
     .map((key, index) => `"${key}"=$${index + 1}`)
     .join(", ");
-
-  //Uncomment below to test it out:
-
   //Try block does NOT check if values have changed. It takes the newer values that are in the fields input then assigns them as new values in the database.
   try {
     if (setString.length > 0) {
-      await client.query(
+       await client.query(
         `
         UPDATE routines
         SET ${setString}
@@ -163,9 +160,11 @@ async function updateRoutine({ id, ...fields }) {
         Object.values(fields)
       );
     }
-
-    //This should reflect when you pass the same id into the getRoutineById function.
-    return getRoutineById(id);
+// const updatedRoutine = await getRoutineById(id)
+// console.log(updatedRoutine)
+    // return updatedRoutine;
+    return await getRoutineById(id)
+    
   } catch (error) {
     throw error;
   }

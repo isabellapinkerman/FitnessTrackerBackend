@@ -141,5 +141,4 @@ module.exports = {
   attachActivitiesToRoutines,
   createActivity,
   updateActivity,
-  // checkIfActivityExists,
 };

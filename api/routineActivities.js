@@ -16,53 +16,41 @@ router.patch("/:routineActivityId", requireUser, async (req, res, next) => {
   const { routineActivityId } = req.params;
   const { duration, count } = req.body;
 
-  const updateFields = {};
-
-  if (duration) {
-    updateFields.duration = duration;
+  const fields = {};
+  if (typeof duration != "undefined") {
+    fields.duration = duration;
   }
+  if (typeof count != "undefined") {
+    fields.count = count;
 
-  if (count) {
-    updateFields.count = count;
-  }
+    const routineOwner = await canEditRoutineActivity(
+      routineActivityId,
+      req.user.id
+    );
 
-  const routineOwner = await canEditRoutineActivity(
-    routineActivityId,
-    req.user.id
-  );
+    const routineActivity = await getRoutineActivityById(routineActivityId);
+    const routineId = routineActivity.routineId;
+    const routine = await getRoutineById(routineId);
+    const routineName = routine.name;
 
-  const routineActivity = await getRoutineActivityById(routineActivityId);
-  const routineId = routineActivity.routineId;
-  const routine = await getRoutineById(routineId);
-  const routineName = routine.name;
-
-  if (!routineOwner) {
-    res.status(403);
-    next({
-      name: "OwnerUserError",
-      message: `User ${req.user.username} is not allowed to update ${routineName}`,
-    });
-  }
- 
     try {
-        try {
-            let updatedRoutineActivity = await updateRoutineActivity({ routineId, ...updateFields });
-        
-            if (updatedRoutineActivity) {
-              res.send(updatedRoutineActivity);
-            } else {
-              next({
-                name: "UpdateRoutineActivityError",
-                message: "Error in updating routine_activity!",
-                error: "UpdateRoutineActivityError",
-              });
-            }
-          } catch (error) {
-            next(error);
-          }
+      if (routineOwner) {
+        let updatedRoutineActivity = await updateRoutineActivity({
+          id: routineActivityId,
+          ...fields,
+        });
+        res.send(updatedRoutineActivity);
+      } else {
+        res.status(403);
+        next({
+          name: "OwnerUserError",
+          message: `User ${req.user.username} is not allowed to update ${routineName}`,
+        });
+      }
     } catch (error) {
       next(error);
     }
+  }
 });
 
 // DELETE /api/routine_activities/:routineActivityId--------------------------------------------------------------------------------
@@ -70,7 +58,7 @@ router.patch("/:routineActivityId", requireUser, async (req, res, next) => {
 router.delete("/:routineActivityId", requireUser, async (req, res, next) => {
   const { routineActivityId } = req.params;
 
-//----------------Checks if routine_activity is by the logged in user---------------
+  //----------------Checks if routine_activity is by the logged in user---------------
   const routineOwner = await canEditRoutineActivity(
     routineActivityId,
     req.user.id

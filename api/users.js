@@ -45,14 +45,13 @@ router.post("/login", async (req, res, next) => {
 
 // POST /api/users/register--------------------------------------------------------------------------------
 
-
 router.post("/register", async (req, res, next) => {
   const { username, password } = req.body;
 
   // const SALT_COUNT = 10;
   // const hashedPassword = await bcrypt.hash(password, SALT_COUNT)
 
-  const existingUser = await getUserByUsername( username );
+  const existingUser = await getUserByUsername(username);
 
   if (existingUser) {
     next({
@@ -93,7 +92,6 @@ router.post("/register", async (req, res, next) => {
     next({ name, message });
   }
 });
-
 
 // GET /api/users/me--------------------------------------------------------------------------------
 

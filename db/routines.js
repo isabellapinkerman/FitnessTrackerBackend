@@ -164,7 +164,6 @@ async function updateRoutine({ id, ...fields }) {
 // console.log(updatedRoutine)
     // return updatedRoutine;
     return await getRoutineById(id)
-    
   } catch (error) {
     throw error;
   }

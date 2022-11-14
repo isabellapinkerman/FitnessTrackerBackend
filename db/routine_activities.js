@@ -79,7 +79,7 @@ async function updateRoutineActivity({ id, ...fields }) {
       );
     }
 
-    return getRoutineActivityById(id);
+    return await getRoutineActivityById(id);
   } catch (error) {
     throw error;
   }

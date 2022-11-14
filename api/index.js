@@ -63,8 +63,6 @@ router.use("/routines", routinesRouter);
 const routineActivitiesRouter = require("./routineActivities");
 router.use("/routine_activities", routineActivitiesRouter);
 
-
-
 //---------------NEW--------------------
 router.use((error, req, res, next) => {
   res.send({

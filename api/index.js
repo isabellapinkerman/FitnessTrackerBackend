@@ -72,10 +72,13 @@ router.use((error, req, res, next) => {
   });
 });
 
-// //ROUTER: /api/unknown
-//Unsure of how this is suppose to work
-// router.get("/unknown", async (req, res) => {
-//   res.status(404);
-// });
+//ROUTER: /api/unknown
+router.get("/:any", async (req, res) => {
+  const { any } = req.params;
+  if (any) {
+    res.status(404);
+    res.send({ message: "get out" });
+  }
+});
 
 module.exports = router;

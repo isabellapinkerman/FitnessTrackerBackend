@@ -116,15 +116,15 @@ router.post("/:routineId/activities", async (req, res, next) => {
   // });
 
   // const routineActivity = await getRoutineActivityById(routineActivityId[0].id);
-  // console.log(routineActivity, "this is routineActivity")
+
 
   // if (routineActivity.activityId !== activityId) {
-  //   let attachedActivitiesToRoutines = await addActivityToRoutine({
-  //     routineId,
-  //     activityId,
-  //     duration,
-  //     count,
+  //   next({
+  //     name: "ActivityExistsInRoutineError",
+  //     message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
+  //     error: "ActivityExistsInRoutineError",
   //   });
+  // }
 
   try {
     let attachedActivitiesToRoutines = await addActivityToRoutine({
